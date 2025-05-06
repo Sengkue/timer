@@ -2,16 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom Timer</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Countdown Timer</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 5px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <div class="timer-container">
-    <input type="number" id="timeInput" placeholder="Enter seconds" min="1">
-    <button onclick="startTimer()">Start</button>
-    <h1 id="timer">00</h1>
-  </div>
 
-  <script src="script.js"></script>
+  <input id="timeInput" type="number" placeholder="Enter seconds" min="1">
+  <button onclick="startCountdown()">Start Timer</button>
+
+  <h1 id="countdown">Ready</h1>
+
+  <script>
+    function startCountdown() {
+      const input = document.getElementById("timeInput");
+      let seconds = parseInt(input.value);
+      const countdownEl = document.getElementById("countdown");
+
+      if (isNaN(seconds) || seconds <= 0) {
+        countdownEl.textContent = "Please enter a valid number";
+        return;
+      }
+
+      countdownEl.textContent = seconds;
+
+      const timer = setInterval(() => {
+        seconds--;
+        countdownEl.textContent = seconds;
+
+        if (seconds <= 0) {
+          clearInterval(timer);
+          countdownEl.textContent = "Time's up!";
+        }
+      }, 1000);
+    }
+  </script>
+
 </body>
 </html>

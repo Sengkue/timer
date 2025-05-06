@@ -3,16 +3,30 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #222;
-    color: #fff;
+    background-color: #1e1e1e;
     font-family: Arial, sans-serif;
+    color: #fff;
   }
   
   .timer-container {
     text-align: center;
   }
   
+  input {
+    padding: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
   #timer {
-    font-size: 5rem;
+    font-size: 4rem;
+    margin-top: 20px;
   }
   
