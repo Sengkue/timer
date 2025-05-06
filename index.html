@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Countdown Timer</title>
+  <title>Countdown Timer with Notification</title>
   <style>
     body {
       background-color: #121212;
@@ -13,9 +13,10 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      transition: background-color 0.3s ease;
     }
 
-    input, button {
+    select, input, button {
       padding: 10px;
       font-size: 18px;
       margin: 5px;
@@ -25,35 +26,99 @@
       font-size: 3rem;
       margin-top: 20px;
     }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .flash {
+      animation: flashRed 0.5s infinite alternate;
+    }
+
+    @keyframes flashRed {
+      0%   { background-color: #8b0000; }
+      100% { background-color: #ff0000; }
+    }
   </style>
 </head>
 <body>
 
-  <input id="timeInput" type="number" placeholder="Enter seconds" min="1">
-  <button onclick="startCountdown()">Start Timer</button>
+  <div class="container">
+    <div class="row">
+      <label for="preset">Choose time:</label>
+      <select id="preset" onchange="setFromPreset()">
+        <option value="">-- Select --</option>
+        <option value="5">5 seconds</option>
+        <option value="10">10 seconds</option>
+        <option value="15">15 seconds</option>
+        <option value="30">30 seconds</option>
+        <option value="3600">1 hour</option>
+        <option value="7200">2 hours</option>
+      </select>
+    </div>
 
-  <h1 id="countdown">Ready</h1>
+    <div class="row">
+      <input id="timeInput" type="number" placeholder="Or enter seconds manually" min="1">
+      <button onclick="startCountdown()">Start Timer</button>
+    </div>
+
+    <h1 id="countdown">Ready</h1>
+  </div>
 
   <script>
+    let timer;
+
+    // Request permission for push notifications
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          console.log("Notification permission granted");
+        }
+      });
+    }
+
+    function setFromPreset() {
+      const presetValue = document.getElementById("preset").value;
+      document.getElementById("timeInput").value = presetValue;
+    }
+
     function startCountdown() {
+      clearInterval(timer);
+      document.body.classList.remove("flash"); // Reset any red flashing
       const input = document.getElementById("timeInput");
       let seconds = parseInt(input.value);
       const countdownEl = document.getElementById("countdown");
 
       if (isNaN(seconds) || seconds <= 0) {
-        countdownEl.textContent = "Please enter a valid number";
+        countdownEl.textContent = "Please enter or select a valid time";
         return;
       }
 
       countdownEl.textContent = seconds;
 
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         seconds--;
         countdownEl.textContent = seconds;
 
         if (seconds <= 0) {
           clearInterval(timer);
-          countdownEl.textContent = "Time's up!";
+          countdownEl.textContent = "⏰ TIME'S UP!";
+          document.body.classList.add("flash");
+
+          // Send push notification
+          if (Notification.permission === "granted") {
+            const notification = new Notification("⏰ Time's Up!", {
+              body: "Your timer has completed.",
+              icon: "https://example.com/icon.png", // Optionally, you can add an icon
+            });
+          }
         }
       }, 1000);
     }
